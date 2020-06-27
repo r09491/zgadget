@@ -31,7 +31,7 @@ def define():
     with open(os.path.join(strings, 'manufacturer'), 'wb') as manufacturer:
         manufacturer.write(b'r09491')
     with open(os.path.join(strings, 'product'), 'wb') as product:
-        product.write(b'zerogadget')
+        product.write(b'zgadget')
 
 
     ''' Define the functions '''
@@ -52,7 +52,7 @@ def define():
     with open(os.path.join(mass_storage, 'lun.0', 'removable'), 'wb') as removable:
         removable.write(b'1')
     with open(os.path.join(mass_storage, 'lun.0', 'inquiry_string'), 'wb') as inquiry_string:
-        inquiry_string.write(b'ZEROGADGET')
+        inquiry_string.write(b'ZGADGET')
     with open(os.path.join(mass_storage, 'lun.0', 'file'), 'wb') as file:
         file.write(STORAGE.encode())
 
@@ -64,7 +64,7 @@ def define():
     os.makedirs(configs_strings, exist_ok = True)
 
     with open(os.path.join(configs_strings, 'configuration'), 'wb') as configuration:
-        configuration.write(b'Config ZEROGADGET')
+        configuration.write(b'Config ZGADGET')
 
     with open(os.path.join(configs, 'MaxPower'), 'wb') as MaxPower:
         MaxPower.write(b'250')
