@@ -2,7 +2,7 @@ import sys
 import os
 import glob
 
-STORAGE = '/var/gadget/storage/gadget.img'
+STORAGE = '/var/zgadget/storage/zgadget.img'
 G1 = '/sys/kernel/config/usb_gadget/g1'
 
 ''' Used configuration number and function Name '''
@@ -10,9 +10,12 @@ C, N = 1, 'usb0'
 
 
 def define():
-    
+
+    ''' Define the root ''' 
     os.makedirs(G1, exist_ok = True)
     
+    ''' Define the common properties ''' 
+
     with open(os.path.join(G1, 'idVendor'), 'wb') as idVendor:
         idVendor.write(b'0x1d6b')
     with open(os.path.join(G1, 'idProduct'), 'wb') as idProduct:
@@ -35,9 +38,20 @@ def define():
 
 
     ''' Define the functions '''
-        
-    ## other gadgets ...
+
+    ## The ethernet function 
+
+    ecm = os.path.join(G1, 'functions', f'ecm.{N}')
+    os.makedirs(ecm, exist_ok = True)
+
+    with open(os.path.join(ecm, 'host_addr'), 'wb') as host_addr:
+        host_addr.write(b'48:6f:73:74:50:43') # First byte even 57#57
+    with open(os.path.join(ecm, 'dev_addr'), 'wb') as dev_addr:
+        dev_addr.write(b'42:61:64:55:53:42')
     
+    
+    ## The mass storage function 
+
     mass_storage = os.path.join(G1, 'functions', f'mass_storage.{N}')
     os.makedirs(mass_storage, exist_ok = True)
     
@@ -57,6 +71,9 @@ def define():
         file.write(STORAGE.encode())
 
 
+    ## other functions ...
+        
+
     ''' Define the configuration '''
     
     configs = os.path.join(G1, 'configs', f'c.{C}')
@@ -68,15 +85,21 @@ def define():
 
     with open(os.path.join(configs, 'MaxPower'), 'wb') as MaxPower:
         MaxPower.write(b'250')
-        
-    ## other gadgets ...
+
+    ## Link functions to configuration
+    
+    os.symlink(ecm, os.path.join(configs, os.path.basename(ecm)))
+    
     os.symlink(mass_storage, os.path.join(configs, os.path.basename(mass_storage)))
 
+    ## other function ...
 
+    
     ''' Enable the gadget '''
     
     with open(os.path.join(G1, 'UDC'), 'wb') as UDC:
-        UDC.write(' '.join(os.path.basename(i) for i in glob.glob('/sys/class/udc/*')).encode())
+        UDC.write(' '.join(os.path.basename(i)
+                           for i in glob.glob('/sys/class/udc/*')).encode())
         
     return 0
 
@@ -95,8 +118,11 @@ def clean():
     configs = os.path.join(G1, 'configs', f'c.{C}')
     if os.path.exists(configs):
         
-        ''' Remove the functions from the configuration '''
+        ''' Remove the function link from the configuration '''
     
+        ecm = os.path.join(configs, f'ecm.{N}')
+        if os.path.islink(ecm):
+            os.unlink(ecm)
         
         mass_storage = os.path.join(configs, f'mass_storage.{N}')
         if os.path.islink(mass_storage):
@@ -116,15 +142,19 @@ def clean():
 
     ''' Remove the functions from the gadget '''
     
+    ecm = os.path.join(G1, 'functions', f'ecm.{N}')
+    if os.path.isdir(ecm):
+        os.rmdir(ecm)
+
     mass_storage = os.path.join(G1, 'functions', f'mass_storage.{N}')
     if os.path.isdir(mass_storage):
         os.rmdir(mass_storage)
 
+    ## other functions ...
+
     strings = os.path.join(G1, 'strings', '0x409')
     if os.path.isdir(strings):
         os.rmdir(strings)
-    
-    ## other functions ...
 
     
     ''' Remove the configuration of the gadget '''

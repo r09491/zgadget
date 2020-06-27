@@ -1,7 +1,7 @@
 import subprocess
 
 
-WATCH_PATH = '/media/gadget'
+WATCH_PATH = '/media/zgadget'
 
 _CMD_MOUNT = ['/bin/mount', WATCH_PATH]
 _CMD_UNMOUNT = ['/bin/umount', WATCH_PATH]
