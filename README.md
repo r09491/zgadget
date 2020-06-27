@@ -1,4 +1,4 @@
-##Raspberry Zero USB gadget with ethernet and and mass storage
+### Raspberry Zero USB gadget with ethernet and and mass storage
 
 Per default the Raspberry Zero runs in host mode as any other member
 of the Raspberry family.  A OTG cable is connected to to inner USB
@@ -9,28 +9,29 @@ The Zero can be setup to run as an USB device. Then it may provide some
 services to a connected host. In this case ethernet over USB and a mass
 storage.
 
-## Setup with *configfs*
+## Setup with **configfs**
 
-* In */boot/config.txt* append
+* In **/boot/config.txt** append
 ```dtoverlay=dwc2```
 
-* In */etc/modules* append
+* In **/etc/modules** append
 ```dwc2
 libcomposite```
 
 * Clone the repository with
 ```/var $ git clone https://github.com/r09491/zgadget.git```
 
-* In the *storage* directory create the FAT image to be mounted as a loop file
-```/var/zgadget $ cd storage
+* In the **storage** directory create the FAT image to be mounted as a loop file
+```/var/zgadget $ mkdir storage
+/var/zgadget $ cd storage
 /var/zgadget/storage $ sudo dd bs=1M if=/dev/zero of=/piusb.bin count=4096
 /var/zgadget/storage $ sudo mkdosfs zgadget.img -F 32 -I
 /var/zgadget/storage $```
 
-* In the */etc/fstab* append:
+* In the **/etc/fstab** append:
 ```/var/zgadget/storage/zgadget.img /media/zgadget vfat loop,users,umask=000,noauto 0 2```
 
-* Create the directory */media/zgadget* for mounting:
+* Create the directory **/media/zgadget** for mounting:
 ```/var/zgadget/storage $ sudo mkdir /media/zgadget```
 
 ## Usage
