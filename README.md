@@ -1,4 +1,4 @@
-### Raspberry Zero USB gadget with ethernet and and mass storage
+# Raspberry Zero USB gadget with ethernet and and mass storage
 
 Per default the Raspberry Zero runs in host mode as any other member
 of the Raspberry family.  A OTG cable is connected to to inner USB
@@ -15,18 +15,22 @@ storage.
 ```dtoverlay=dwc2```
 
 * In **/etc/modules** append
-```dwc2
-libcomposite```
+```
+dwc2
+libcomposite
+```
 
 * Clone the repository with
 ```/var $ git clone https://github.com/r09491/zgadget.git```
 
 * In the **storage** directory create the FAT image to be mounted as a loop file
-```/var/zgadget $ mkdir storage
+```
+/var/zgadget $ mkdir storage
 /var/zgadget $ cd storage
 /var/zgadget/storage $ sudo dd bs=1M if=/dev/zero of=/piusb.bin count=4096
 /var/zgadget/storage $ sudo mkdosfs zgadget.img -F 32 -I
-/var/zgadget/storage $```
+/var/zgadget/storage $
+```
 
 * In the **/etc/fstab** append:
 ```/var/zgadget/storage/zgadget.img /media/zgadget vfat loop,users,umask=000,noauto 0 2```
@@ -36,9 +40,11 @@ libcomposite```
 
 ## Usage
 
-* Create configuration tree and start sync server.
-```/var/zgadget/storage $ cd /var/zgadget/scripts
-/var/zgadget/scripts $ sudo ./start_sync_storage.py```
+### Create configuration tree and start sync server.
+```
+/var/zgadget/storage $ cd /var/zgadget/scripts
+/var/zgadget/scripts $ sudo ./start_sync_storage.py
+```
 
 The configuration tree should look as follows:
 ```
@@ -89,8 +95,10 @@ The configuration tree should look as follows:
 
 14 directories, 29 files
 ```
-* Connect the Raspberry Zero with a Linux Machine
-  *A USB disk is mounted and available for Linux file managment
+
+### Connect the Raspberry Zero with a Linux Machine
+  
+  * A USB disk is mounted and available for Linux file managment
   
   * A random IP address is generated for the Zero (Avahi). In my case: 169.254.158.207/16
 
@@ -100,11 +108,10 @@ The configuration tree should look as follows:
   This allows to connect the host to Zero:
   '''ssh 169.254.158.207'''
 
-* Cleanup if you are done
+### Cleanup if you are done
 ```var/zgadget/scripts $ sudo ./stop_sync_storage.py```
 
-* The process may be automated  by adding **zgadget_sync_watchdog.service**
-  to */etc/systemd/system*
+### Automate the process by adding **zgadget_sync_watchdog.service** to **/etc/systemd/system**
   ```
   [Unit]
   Description=USB gadget storage sync watchdog
@@ -121,9 +128,11 @@ The configuration tree should look as follows:
   WantedBy=multi-user.target
   ```
 
-* Activate the service
-```sudo systemctl daemon-reload
+### Activate the service
+```
+sudo systemctl daemon-reload
 sudo systemctl enable zgadget_sync_watchdog.service
-sudo systemctl start zgadget_sync_watchdog.service```
+sudo systemctl start zgadget_sync_watchdog.service
+```
 
 
